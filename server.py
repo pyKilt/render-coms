@@ -5,6 +5,7 @@ from premailer import transform
 
 # from jinja2 import Template
 
+import ipdb
 import os
 import os.path
 import jinja2
@@ -23,17 +24,18 @@ def get_html(path):
     print os.getcwd() + '/' + template_file
 
     # print request.headers
-    # all_args = request.args.to_dict()
-    # return jsonify(all_args)
+    all_args = request.args.to_dict()
+    # ipdb.sset_trace()
+    return jsonify(all_args)
 
-    if os.path.exists( os.getcwd() + '/templates/' + template_file ):
-        try:
-            # return transform( templateEnv.get_template( template_file ).render( request.args.to_dict() ) )
-            return transform( open( os.getcwd() + '/templates/' + template_file, 'r').read() )
-        except Exception, e:
-            return str(e), 500
-
-    return 'path: %s does not exist' % path, 404
+    # if os.path.exists( os.getcwd() + '/templates/' + template_file ):
+    #     try:
+    #         # return transform( templateEnv.get_template( template_file ).render( request.args.to_dict() ) )
+    #         return transform( open( os.getcwd() + '/templates/' + template_file, 'r').read() )
+    #     except Exception, e:
+    #         return str(e), 500
+    #
+    # return 'path: %s does not exist' % path, 404
 
 if __name__ == '__main__':
     app.run()
