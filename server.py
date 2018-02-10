@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from flask_accept import accept
 from premailer import transform
 from qserious import deserialize
+from markdown import markdown
 
 # from jinja2 import Template
 
@@ -20,25 +21,39 @@ app = Flask(__name__)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-@accept('text/html')
 def get_html(path):
-    template_file = path.strip('/') + '.html'
-    print os.getcwd() + '/' + template_file
+    template_file = path.strip('/')
+    template_path = os.getcwd() + '/templates/' + template_file
 
-    # # print request.headers
-    # all_args = request.args.to_dict()
-    # # ipdb.sset_trace()
-    # return jsonify(all_args)
+    if os.path.exists( template_path + '.html' ):
+        template_format = 'html'
+        template_src = templateEnv.get_template( template_file + '.html' )
+    elif os.path.exists( template_path + '.md' ):
+        template_format = 'md'
+        template_src = templateEnv.get_template( template_file + '.md' )
+    else:
+        return 'path: %s does not exist' % path, 404
 
-    if os.path.exists( os.getcwd() + '/templates/' + template_file ):
-        try:
-            # return transform( templateEnv.get_template( template_file ).render( request.args.to_dict() ) )
-            # return transform( open( os.getcwd() + '/templates/' + template_file, 'r').read() )
-            return transform( templateEnv.get_template( template_file ).render( deserialize(request.query_string) ) )
-        except Exception, e:
-            return str(e), 500
+    print template_path
 
-    return 'path: %s does not exist' % path, 404
+    # print request.headers
+    # ipdb.sset_trace()
+    result = ''
+
+    try:
+        result = template_src.render(
+            request.get_json() if request.method == 'POST' else deserialize(request.query_string)
+        )
+    except Exception, e:
+        return jsonify({ 'message': str(e) }), 400
+
+    if( template_format == 'md' ):
+        result = markdown( result )
+
+    if( request.args.get('css_inline') == 'true' ):
+        result = transform( result )
+
+    return result
 
 if __name__ == '__main__':
     app.run()
