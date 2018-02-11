@@ -12,6 +12,7 @@ import os
 import os.path
 import jinja2
 import re
+import yaml
 
 # https://stackoverflow.com/questions/38642557/how-to-load-jinja-template-directly-from-filesystem
 templateLoader = jinja2.FileSystemLoader( searchpath="./templates/")
@@ -48,7 +49,19 @@ def get_html(path):
         return jsonify({ 'message': str(e) }), 400
 
     if( template_format == 'md' ):
-        result = markdown( result )
+        template_options = {}
+        matched = re.match(r'^---([\s\S]*?)---', result)
+
+        if( matched ):
+            template_options = yaml.load( matched.group(1) )
+
+        result = markdown( re.sub(r'^---[\s\S]*?---', '', result) )
+
+        if( 'layout' in template_options ):
+            md_block = r'{% extends "layout/' + template_options['layout'] + '.html" %}{% block ' + \
+                ( template_options.block if 'block' in template_options else 'main' ) + \
+                ' %}' + result + '{% endblock %}'
+            result = jinja2.Environment( loader=templateLoader ).from_string(md_block).render()
 
     if( request.args.get('css_inline') == 'true' ):
         result = transform( result )

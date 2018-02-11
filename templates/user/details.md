@@ -1,5 +1,5 @@
 ---
-extends: base.html
+layout: default
 ---
 
 # {{ user.first_name }}
