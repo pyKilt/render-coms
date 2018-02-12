@@ -66,6 +66,7 @@ def get_html(path):
             result = jinja2.Environment( loader=templateLoader ).from_string(md_block).render()
 
     if( request.args.get('css') == 'email' ):
+        # https://premailer.io/
         result = Premailer(result, keep_style_tags=True).transform()
 
     # if( request.args.get('format') == 'pdf' ):
