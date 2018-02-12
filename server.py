@@ -1,9 +1,10 @@
 
 from flask import Flask, jsonify, request
 # from flask_accept import accept
-from premailer import transform
 from qserious import deserialize
 from markdown import markdown
+from premailer import Premailer
+# from premailer import transform
 # from pdfs import create_pdf
 
 # from jinja2 import Template
@@ -64,8 +65,8 @@ def get_html(path):
                 ' %}' + result + '{% endblock %}'
             result = jinja2.Environment( loader=templateLoader ).from_string(md_block).render()
 
-    if( request.args.get('css_inline') == 'true' ):
-        result = transform( result )
+    if( request.args.get('css') == 'email' ):
+        result = Premailer(result, keep_style_tags=True).transform()
 
     # if( request.args.get('format') == 'pdf' ):
     #     return create_pdf(result)
