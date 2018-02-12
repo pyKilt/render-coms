@@ -1,14 +1,14 @@
 
 from flask import Flask, jsonify, request
-from flask_accept import accept
+# from flask_accept import accept
 from premailer import transform
 from qserious import deserialize
 from markdown import markdown
-from pdfs import create_pdf
+# from pdfs import create_pdf
 
 # from jinja2 import Template
 
-import ipdb
+# import ipdb
 import os
 import os.path
 import jinja2

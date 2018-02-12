@@ -11,6 +11,7 @@ lxml==4.1.1
 Markdown==2.6.11
 MarkupSafe==1.0
 premailer==3.1.1
+PyYAML==3.12
 qserious==0.2.7
 requests==2.18.4
 urllib3==1.22
