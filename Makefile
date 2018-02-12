@@ -13,4 +13,4 @@ install: virtualenv
 up: install
 	python server.py
 
-.PHONY: install up
+.PHONY: install up virtualenv
