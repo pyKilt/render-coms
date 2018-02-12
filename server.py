@@ -50,20 +50,20 @@ def get_html(path):
     except Exception, e:
         return jsonify({ 'message': str(e) }), 400
 
+    template_options = {}
+    matched = re.match(r'^---([\s\S]*?)---', result)
+
+    if( matched ):
+        template_options = yaml.load( matched.group(1) )
+
     if( template_format == 'md' ):
-        template_options = {}
-        matched = re.match(r'^---([\s\S]*?)---', result)
-
-        if( matched ):
-            template_options = yaml.load( matched.group(1) )
-
         result = markdown( re.sub(r'^---[\s\S]*?---', '', result) )
 
-        if( 'layout' in template_options ):
-            md_block = r'{% extends "layout/' + template_options['layout'] + '.html" %}{% block ' + \
-                ( template_options.block if 'block' in template_options else 'main' ) + \
-                ' %}' + result + '{% endblock %}'
-            result = jinja2.Environment( loader=templateLoader ).from_string(md_block).render()
+    if( 'layout' in template_options ):
+        md_block = r'{% extends "layout/' + template_options['layout'] + '.html" %}{% block ' + \
+            ( template_options.block if 'block' in template_options else 'main' ) + \
+            ' %}' + result + '{% endblock %}'
+        result = jinja2.Environment( loader=templateLoader ).from_string(md_block).render()
 
     if( request.args.get('css') == 'email' ):
         # https://premailer.io/
